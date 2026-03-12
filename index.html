@@ -1022,13 +1022,22 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .quiz-option:hover, .quiz-option:focus {
-      background: rgba(232, 146, 47, 0.12);
-      border-color: var(--orange);
+    @media (hover: hover) {
+      .quiz-option:hover {
+        background: rgba(232, 146, 47, 0.12);
+        border-color: var(--orange);
+      }
     }
 
     .quiz-option:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
+    }
+
+    .quiz-option.selected {
+      border-color: var(--orange);
+      background: rgba(232, 146, 47, 0.2);
+      box-shadow: 0 0 0 1px var(--orange), 0 2px 12px var(--orange-glow);
+      color: var(--white);
     }
 
     .quiz-option-icon {
@@ -1043,8 +1052,10 @@
       font-size: 1.2rem;
     }
 
-    .quiz-option:hover .quiz-option-icon {
-      background: rgba(232, 146, 47, 0.2);
+    @media (hover: hover) {
+      .quiz-option:hover .quiz-option-icon {
+        background: rgba(232, 146, 47, 0.2);
+      }
     }
 
     /* Quiz grid layout for 2-col options */
@@ -1891,11 +1902,17 @@
 
     // ===== QUIZ ACTIONS =====
     function selectOption(key, value) {
-      haptic('medium');
+      haptic('selection');
+      document.querySelectorAll('.quiz-option').forEach(function(o) { o.classList.remove('selected'); });
+      event.currentTarget.classList.add('selected');
       quizState.answers[key] = value;
-      quizState.currentStep++;
-      syncLead();
-      renderStep(quizState.currentStep);
+      clearTimeout(window._autoAdvance);
+      window._autoAdvance = setTimeout(function() {
+        haptic('light');
+        quizState.currentStep++;
+        syncLead();
+        renderStep(quizState.currentStep);
+      }, 500);
     }
 
     function submitInput(key, pattern, errorMsg) {
