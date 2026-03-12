@@ -229,18 +229,22 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .quiz-option:hover, .quiz-option:focus {
-      background: rgba(232, 146, 47, 0.12);
-      border-color: var(--orange);
+    /* Only show hover on devices that support it (not mobile) */
+    @media (hover: hover) {
+      .quiz-option:hover {
+        background: rgba(232, 146, 47, 0.12);
+        border-color: var(--orange);
+      }
     }
 
     .quiz-option:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
 
     .quiz-option.selected {
       border-color: var(--orange);
-      background: rgba(232, 146, 47, 0.15);
+      background: rgba(232, 146, 47, 0.2);
+      box-shadow: 0 0 0 1px var(--orange), 0 2px 12px var(--orange-glow);
       color: var(--white);
     }
 
@@ -256,8 +260,10 @@
       font-size: 1.1rem;
     }
 
-    .quiz-option:hover .quiz-option-icon {
-      background: rgba(232, 146, 47, 0.2);
+    @media (hover: hover) {
+      .quiz-option:hover .quiz-option-icon {
+        background: rgba(232, 146, 47, 0.2);
+      }
     }
 
     /* Quiz grid layout for 2-col options */
@@ -332,26 +338,57 @@
       text-align: center;
     }
 
-    .quiz-spinner {
-      width: 64px;
-      height: 64px;
-      border: 4px solid rgba(255,255,255,0.1);
-      border-top-color: var(--orange);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    .quiz-progress-ring {
+      width: 80px;
+      height: 80px;
       margin: 0 auto 24px;
+      position: relative;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .quiz-progress-ring svg {
+      transform: rotate(-90deg);
+      width: 80px;
+      height: 80px;
+    }
+
+    .quiz-progress-ring .ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 4;
+    }
+
+    .quiz-progress-ring .ring-fill {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 226;
+      stroke-dashoffset: 226;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .quiz-progress-ring .ring-pct {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      color: var(--orange);
+      letter-spacing: 0.02em;
+    }
 
     .quiz-loading p {
       color: rgba(255,255,255,0.5);
       font-size: 0.9rem;
+      transition: opacity 0.2s ease;
     }
 
     .quiz-loading h2 {
       font-size: 1.3rem !important;
       margin-bottom: 12px !important;
+      transition: opacity 0.2s ease;
     }
 
     /* ========== SUCCESS BADGE ========== */
@@ -640,9 +677,7 @@
       {
         type: 'loading',
         eyebrow: '',
-        question: 'Checking availability in your area...',
-        loadingText: 'This only takes a moment',
-        duration: 3000
+        duration: 2500
       },
       // Step 7: Name
       {
@@ -853,12 +888,49 @@
 
     function renderLoading(step) {
       const zip = quizState.answers.zip_code || '';
-      const loadQ = zip ? 'Checking availability near ' + zip + '...' : step.question;
-      return '<div class="quiz-loading">'
-        + '<div class="quiz-spinner"></div>'
-        + '<h2>' + loadQ + '</h2>'
-        + '<p>' + step.loadingText + '</p>'
+      const stages = [
+        { pct: 0, h: 'Checking your area' + (zip ? ' (' + zip + ')' : '') + '...', p: 'This just takes a sec' },
+        { pct: 35, h: 'Finding available contractors...', p: 'Matching your project details' },
+        { pct: 70, h: 'Almost ready...', p: 'Putting your quote together' },
+        { pct: 100, h: 'You\'re all set!', p: '' }
+      ];
+      // Render the SVG ring + text placeholders
+      var html = '<div class="quiz-loading">'
+        + '<div class="quiz-progress-ring">'
+        + '<svg viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="36"/><circle class="ring-fill" id="ringFill" cx="40" cy="40" r="36"/></svg>'
+        + '<div class="ring-pct" id="ringPct">0%</div>'
+        + '</div>'
+        + '<h2 id="loadH">' + stages[0].h + '</h2>'
+        + '<p id="loadP">' + stages[0].p + '</p>'
         + '</div>';
+      // Animate stages after render
+      setTimeout(function() {
+        var ring = document.getElementById('ringFill');
+        var pctEl = document.getElementById('ringPct');
+        var hEl = document.getElementById('loadH');
+        var pEl = document.getElementById('loadP');
+        if (!ring) return;
+        var circumference = 226; // 2 * PI * 36
+        var stageIdx = 1;
+        var interval = step.duration / stages.length;
+        function setStage(s) {
+          var offset = circumference - (circumference * s.pct / 100);
+          ring.style.strokeDashoffset = offset;
+          pctEl.textContent = s.pct + '%';
+          hEl.textContent = s.h;
+          pEl.textContent = s.p;
+          if (s.pct === 100) haptic('success');
+        }
+        var timer = setInterval(function() {
+          if (stageIdx < stages.length) {
+            setStage(stages[stageIdx]);
+            stageIdx++;
+          } else {
+            clearInterval(timer);
+          }
+        }, interval);
+      }, 50);
+      return html;
     }
 
     function renderThankYou() {
