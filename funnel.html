@@ -98,20 +98,35 @@
       flex-shrink: 0;
     }
 
-    .quiz-back {
-      background: none;
-      color: rgba(255,255,255,0.5);
-      font-size: 0.9rem;
+    .quiz-header-left {
+      min-width: 44px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px;
-      transition: var(--transition);
-      min-width: 60px;
     }
 
-    .quiz-back:hover { color: var(--white); }
-    .quiz-back.hidden { visibility: hidden; }
+    .quiz-header-right {
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .quiz-nav-arrow {
+      background: none;
+      color: rgba(255,255,255,0.5);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .quiz-nav-arrow:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+    .quiz-nav-arrow:active { transform: scale(0.9); }
+    .quiz-nav-arrow.disabled { opacity: 0.15; pointer-events: none; }
 
     .quiz-header-center {
       display: flex;
@@ -130,25 +145,7 @@
       opacity: 0.5;
     }
 
-    .quiz-step-label {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      display: none;
-    }
-
-    .quiz-close {
-      background: none;
-      color: rgba(255,255,255,0.5);
-      font-size: 1.5rem;
-      padding: 8px;
-      transition: var(--transition);
-      min-width: 60px;
-      text-align: right;
-    }
-
-    .quiz-close:hover { color: var(--white); }
+    /* Fullscreen funnel — nav arrows handle all navigation */
 
     /* ========== QUIZ BODY ========== */
     .quiz-body {
@@ -490,15 +487,19 @@
 
   <!-- ========== QUIZ HEADER ========== -->
   <div class="quiz-header">
-    <button class="quiz-back hidden" id="quizBack" onclick="quizPrev()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Back
-    </button>
+    <div class="quiz-header-left">
+      <button class="quiz-nav-arrow disabled" id="quizBack" onclick="quizPrev()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
     <div class="quiz-header-center">
       <div class="quiz-brand"><img src="logo.jpg" alt="Elevate Construction & Electrical"></div>
-      <div class="quiz-step-label" id="quizStepLabel">Step 1 of 10</div>
     </div>
-    <button class="quiz-close" onclick="closeFunnel()">&times;</button>
+    <div class="quiz-header-right">
+      <button class="quiz-nav-arrow disabled" id="quizNext" onclick="advanceStep()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
   </div>
 
   <!-- ========== QUIZ BODY ========== -->
@@ -513,6 +514,12 @@
     <div class="quiz-progress-bar" id="quizProgress" style="width: 0%"></div>
   </div>
 
+  <!-- ========== WEB HAPTICS (iOS + Android) ========== -->
+  <script type="module">
+    import { WebHaptics } from 'https://esm.sh/web-haptics';
+    window.__haptics = new WebHaptics();
+  </script>
+
   <!-- ========== JAVASCRIPT ========== -->
   <script>
     // ===== CONFIG =====
@@ -521,33 +528,11 @@
     const CLIENT_ID = 'mike';
     const SOURCE = 'ad_funnel';
 
-    // ===== HAPTICS (cross-platform) =====
-    let _hapticCtx = null;
+    // ===== HAPTICS (web-haptics library — works on iOS) =====
     function haptic(type) {
-      type = type || 'light';
-      try {
-        if (navigator.vibrate) {
-          const patterns = {
-            light: [8], medium: [15], heavy: [25], soft: [20],
-            rigid: [10], selection: [8], nudge: [10, 40, 10],
-            success: [10, 60, 15], error: [30, 40, 30, 40, 30],
-            warning: [20, 50, 20], buzz: [100]
-          };
-          navigator.vibrate(patterns[type] || [15]);
-        }
-        if (!_hapticCtx) _hapticCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (_hapticCtx.state === 'suspended') _hapticCtx.resume();
-        var osc = _hapticCtx.createOscillator();
-        var gain = _hapticCtx.createGain();
-        osc.connect(gain);
-        gain.connect(_hapticCtx.destination);
-        osc.frequency.value = 150;
-        var dur = {light:0.015, medium:0.025, heavy:0.04, soft:0.02, rigid:0.01, selection:0.012, nudge:0.02, success:0.05, error:0.06, warning:0.035, buzz:0.1}[type] || 0.02;
-        gain.gain.setValueAtTime(0.5, _hapticCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
-        osc.start(_hapticCtx.currentTime);
-        osc.stop(_hapticCtx.currentTime + dur);
-      } catch(e) {}
+      if (window.__haptics) {
+        try { window.__haptics.trigger(type || 'nudge'); } catch(e) {}
+      }
     }
 
     // ===== SESSION ID =====
@@ -723,33 +708,21 @@
     function renderStep(stepIndex) {
       const step = QUIZ_STEPS[stepIndex];
       const container = document.getElementById('quizStepContent');
-      const backBtn = document.getElementById('quizBack');
-      const stepLabel = document.getElementById('quizStepLabel');
       const progressBar = document.getElementById('quizProgress');
 
-      // Update header
-      const questionSteps = 10;
-      if (step.type === 'thankyou') {
-        stepLabel.textContent = 'Complete';
-        backBtn.classList.add('hidden');
-      } else if (step.type === 'loading') {
-        stepLabel.textContent = '';
-        backBtn.classList.add('hidden');
-      } else {
-        const displayStep = Math.min(stepIndex + 1, questionSteps);
-        stepLabel.textContent = 'Step ' + displayStep + ' of ' + questionSteps;
-        backBtn.classList.toggle('hidden', stepIndex === 0);
-      }
-
       // Progress
+      const questionSteps = 10;
       const pct = step.type === 'thankyou' ? 100 : Math.round((stepIndex / questionSteps) * 100);
       progressBar.style.width = pct + '%';
+
+      // Update nav arrows
+      updateNavArrows();
 
       // Render
       let html = '';
       container.style.animation = 'none';
       container.offsetHeight; // reflow
-      container.style.animation = 'fadeUp 0.4s ease forwards';
+      container.style.animation = 'fadeUp 0.25s ease forwards';
 
       switch (step.type) {
         case 'options':
@@ -795,7 +768,6 @@
       if (step.description) {
         html += '<p class="quiz-step-desc">' + step.description + '</p>';
       }
-      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-bottom: 12px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       html += '<div class="quiz-options">';
       step.options.forEach(opt => {
         html += '<button class="quiz-option" onclick="selectOption(\'' + step.key + '\', \'' + opt.value + '\')">'
@@ -829,7 +801,6 @@
       }
       html += '<div class="quiz-step-eyebrow">' + step.eyebrow + '</div>';
       html += '<h2>' + step.question + '</h2>';
-      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-bottom: 12px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       html += '<div class="quiz-options-grid">';
       step.options.forEach(opt => {
         html += '<button class="quiz-option" onclick="selectOption(\'' + step.key + '\', \'' + opt.value + '\')">'
@@ -910,16 +881,32 @@
     }
 
     // ===== QUIZ ACTIONS =====
+    function updateNavArrows() {
+      var backBtn = document.getElementById('quizBack');
+      var nextBtn = document.getElementById('quizNext');
+      var step = QUIZ_STEPS[quizState.currentStep];
+      // Back: disabled on step 0, loading, or thankyou
+      if (quizState.currentStep === 0 || step.type === 'loading' || step.type === 'thankyou') {
+        backBtn.classList.add('disabled');
+      } else {
+        backBtn.classList.remove('disabled');
+      }
+      // Next: enabled only when current option-type step has an answer
+      var key = step.key;
+      if ((step.type === 'options' || step.type === 'grid') && quizState.answers[key]) {
+        nextBtn.classList.remove('disabled');
+      } else {
+        nextBtn.classList.add('disabled');
+      }
+    }
+
     function selectOption(key, value) {
       haptic('selection');
-      // Deselect all options, then select clicked one
       document.querySelectorAll('.quiz-option').forEach(function(o) { o.classList.remove('selected'); });
       event.currentTarget.classList.add('selected');
       quizState.answers[key] = value;
-      // Show the Next button
-      var nextBtn = document.getElementById('quizNextBtn');
-      if (nextBtn) { nextBtn.style.display = ''; }
-      // Auto-advance after 0.5s if user doesn't change answer
+      updateNavArrows();
+      // Auto-advance after 0.5s
       clearTimeout(window._autoAdvance);
       window._autoAdvance = setTimeout(function() { advanceStep(); }, 500);
     }
@@ -995,7 +982,8 @@
 
     function quizPrev() {
       if (quizState.currentStep > 0) {
-        haptic('selection');
+        clearTimeout(window._autoAdvance);
+        haptic('light');
         quizState.currentStep--;
         if (QUIZ_STEPS[quizState.currentStep].type === 'loading') {
           quizState.currentStep--;

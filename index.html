@@ -169,10 +169,9 @@
       align-items: center;
       position: relative;
       overflow: hidden;
-      /* TODO: Replace with Mike's construction/roofing photo */
       background:
-        linear-gradient(135deg, rgba(15,25,35,0.92) 0%, rgba(26,58,107,0.85) 50%, rgba(15,25,35,0.88) 100%),
-        linear-gradient(180deg, var(--blue-dark) 0%, var(--blue-primary) 100%);
+        linear-gradient(135deg, rgba(15,25,35,0.82) 0%, rgba(26,58,107,0.72) 50%, rgba(15,25,35,0.80) 100%),
+        url('https://images.unsplash.com/photo-1765106893273-980e5bf89a7c?w=1920&q=80&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
       padding-top: 70px;
@@ -355,6 +354,12 @@
       box-shadow: 0 8px 32px var(--orange-glow);
     }
 
+    .hero-sub-small {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 12px;
+    }
+
     .hero-trust {
       display: flex;
       align-items: center;
@@ -420,7 +425,14 @@
 
     /* ========== SECTIONS COMMON ========== */
     .section { padding: 80px 0; }
-    .section-dark { background: var(--blue-dark); color: var(--white); }
+    .section-dark {
+      background:
+        linear-gradient(180deg, rgba(15,25,35,0.93) 0%, rgba(15,25,35,0.96) 100%),
+        url('https://images.unsplash.com/photo-1527484728228-e601f31ddefa?w=1920&q=80&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      color: var(--white);
+    }
     .section-light { background: var(--off-white); }
 
     .section-header {
@@ -785,7 +797,11 @@
 
     /* ========== CTA SECTION ========== */
     .cta-section {
-      background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
+      background:
+        linear-gradient(135deg, rgba(26,58,107,0.88) 0%, rgba(15,25,35,0.92) 100%),
+        url('https://images.unsplash.com/photo-1516880967556-b295d8e7b611?w=1920&q=80&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
       padding: 80px 0;
       text-align: center;
     }
@@ -1261,11 +1277,26 @@
     <div class="hero-inner">
       <div class="hero-content">
         <h1>Your Home.<br><span>Elevated.</span></h1>
-        <p class="hero-sub">New England's trusted construction & electrical experts.</p>
-        <button class="hero-cta" onclick="openQuiz()" style="display:none;">
-          Get Your Free Quote
+        <p class="hero-sub">Licensed, insured, and 5-star rated. Roofing, electrical, and full renovations across New England.</p>
+        <button class="hero-cta" onclick="openQuiz()">
+          Get a Free Quote
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
+        <p class="hero-sub-small">Takes under 2 minutes. Get a call back today.</p>
+        <div class="hero-trust">
+          <div class="hero-trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Licensed & Insured
+          </div>
+          <div class="hero-trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            5-Star Rated
+          </div>
+          <div class="hero-trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            24-Hour Emergency
+          </div>
+        </div>
       </div>
 
       <!-- Mini Quiz Card -->
@@ -1273,7 +1304,7 @@
         <div class="hero-quiz-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         </div>
-        <div class="hero-quiz-eyebrow">Get a Free Quote</div>
+        <div class="hero-quiz-eyebrow">Free Quote in 2 Minutes</div>
         <div class="hero-quiz-question">What do you need help with?</div>
         <div class="hero-quiz-options">
           <button class="hero-quiz-btn" onclick="openQuiz('repair')">
@@ -1282,14 +1313,11 @@
           <button class="hero-quiz-btn" onclick="openQuiz('replacement')">
             <span class="hero-quiz-btn-icon">&#127968;</span> Full Roof Replacement
           </button>
-          <button class="hero-quiz-btn" onclick="openQuiz('new_construction')">
-            <span class="hero-quiz-btn-icon">&#127959;&#65039;</span> New Construction Roof
-          </button>
           <button class="hero-quiz-btn" onclick="openQuiz('storm_damage')">
             <span class="hero-quiz-btn-icon">&#9928;&#65039;</span> Storm / Wind Damage
           </button>
           <button class="hero-quiz-btn" onclick="openQuiz('inspection')">
-            <span class="hero-quiz-btn-icon">&#128269;</span> Inspection & Maintenance
+            <span class="hero-quiz-btn-icon">&#128269;</span> Inspection & More
           </button>
         </div>
       </div>
@@ -1534,6 +1562,12 @@
     </div>
   </div>
 
+  <!-- ========== WEB HAPTICS (iOS + Android) ========== -->
+  <script type="module">
+    import { WebHaptics } from 'https://esm.sh/web-haptics';
+    window.__haptics = new WebHaptics();
+  </script>
+
   <!-- ========== JAVASCRIPT ========== -->
   <script>
     // ===== CONFIG =====
@@ -1542,35 +1576,11 @@
     const CLIENT_ID = 'mike';
     const SOURCE = 'website';
 
-    // ===== HAPTICS (cross-platform) =====
-    let _hapticCtx = null;
+    // ===== HAPTICS (web-haptics library — works on iOS) =====
     function haptic(type) {
-      type = type || 'light';
-      try {
-        // Android: native vibration
-        if (navigator.vibrate) {
-          const patterns = {
-            light: [8], medium: [15], heavy: [25], soft: [20],
-            rigid: [10], selection: [8], nudge: [10, 40, 10],
-            success: [10, 60, 15], error: [30, 40, 30, 40, 30],
-            warning: [20, 50, 20], buzz: [100]
-          };
-          navigator.vibrate(patterns[type] || [15]);
-        }
-        // iOS + all platforms: AudioContext micro-pulse
-        if (!_hapticCtx) _hapticCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (_hapticCtx.state === 'suspended') _hapticCtx.resume();
-        var osc = _hapticCtx.createOscillator();
-        var gain = _hapticCtx.createGain();
-        osc.connect(gain);
-        gain.connect(_hapticCtx.destination);
-        osc.frequency.value = 150;
-        var dur = {light:0.015, medium:0.025, heavy:0.04, soft:0.02, rigid:0.01, selection:0.012, nudge:0.02, success:0.05, error:0.06, warning:0.035, buzz:0.1}[type] || 0.02;
-        gain.gain.setValueAtTime(0.5, _hapticCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
-        osc.start(_hapticCtx.currentTime);
-        osc.stop(_hapticCtx.currentTime + dur);
-      } catch(e) {}
+      if (window.__haptics) {
+        try { window.__haptics.trigger(type || 'nudge'); } catch(e) {}
+      }
     }
 
     // ===== SESSION ID =====
