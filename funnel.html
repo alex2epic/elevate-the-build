@@ -227,9 +227,14 @@
       gap: 12px;
       transition: var(--transition);
       -webkit-tap-highlight-color: transparent;
+      outline: none;
+      -webkit-appearance: none;
     }
 
-    /* Only show hover on devices that support it (not mobile) */
+    /* Kill ALL pseudo-states on touch — only show hover on desktop */
+    .quiz-option:focus,
+    .quiz-option:focus-visible { outline: none; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+
     @media (hover: hover) {
       .quiz-option:hover {
         background: rgba(232, 146, 47, 0.12);
@@ -239,11 +244,13 @@
 
     .quiz-option:active {
       transform: scale(0.97);
+      background: rgba(232, 146, 47, 0.15);
+      border-color: var(--orange);
     }
 
     .quiz-option.selected {
-      border-color: var(--orange);
-      background: rgba(232, 146, 47, 0.2);
+      border-color: var(--orange) !important;
+      background: rgba(232, 146, 47, 0.2) !important;
       box-shadow: 0 0 0 1px var(--orange), 0 2px 12px var(--orange-glow);
       color: var(--white);
     }
