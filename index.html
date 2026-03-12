@@ -52,7 +52,7 @@
       --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; background: #0f1923; }
 
     body {
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -195,7 +195,7 @@
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 60px 20px 100px;
+      padding: 30px 20px 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -503,51 +503,6 @@
 
     @media (min-width: 768px) {
       .services-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    /* ========== WHY US ========== */
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .why-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius);
-      padding: 28px 20px;
-      text-align: center;
-      transition: var(--transition);
-    }
-
-    .why-card:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: var(--orange);
-    }
-
-    .why-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      color: var(--orange);
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .why-card h4 {
-      font-size: 1.1rem;
-      color: var(--white);
-      margin-bottom: 6px;
-    }
-
-    .why-card p {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.5;
-    }
-
-    @media (min-width: 768px) {
-      .why-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     /* ========== ABOUT SECTION ========== */
@@ -1267,9 +1222,7 @@
     /* ========== RESPONSIVE ========== */
     @media (max-width: 767px) {
       .section { padding: 60px 0; }
-      .hero-inner { padding: 40px 20px 80px; }
-      .hero-trust { gap: 16px; }
-      .hero-trust-item { font-size: 0.75rem; }
+      .hero-inner { padding: 30px 20px 40px; }
       .hero-quiz-card { max-width: 100%; }
     }
 
@@ -1307,30 +1260,12 @@
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-content">
-        <div class="hero-badge">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          Licensed & Insured
-        </div>
         <h1>Your Home.<br><span>Elevated.</span></h1>
-        <p class="hero-sub">New England's trusted construction & electrical experts. From roofing and renovations to full electrical — we do it once, we do it right.</p>
+        <p class="hero-sub">New England's trusted construction & electrical experts.</p>
         <button class="hero-cta" onclick="openQuiz()" style="display:none;">
           Get Your Free Quote
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
-        <div class="hero-trust">
-          <div class="hero-trust-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-            Free Estimates
-          </div>
-          <div class="hero-trust-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-            Quality Materials
-          </div>
-          <div class="hero-trust-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-            5-Star Rated
-          </div>
-        </div>
       </div>
 
       <!-- Mini Quiz Card -->
@@ -1483,49 +1418,6 @@
     </div>
   </section>
 
-  <!-- ========== WHY US ========== -->
-  <section class="section section-dark" id="why-us">
-    <div class="container">
-      <div class="section-header fade-in">
-        <div class="section-eyebrow">Why Elevate</div>
-        <h2>Built Different</h2>
-        <p>We don't cut corners. Here's what sets us apart.</p>
-      </div>
-      <div class="why-grid">
-        <div class="why-card fade-in">
-          <div class="why-number">100%</div>
-          <h4>Satisfaction Guarantee</h4>
-          <p>We stand behind every project we complete.</p>
-        </div>
-        <div class="why-card fade-in">
-          <div class="why-number">24hr</div>
-          <h4>Emergency Response</h4>
-          <p>Storm damage? We're there when you need us most.</p>
-        </div>
-        <div class="why-card fade-in">
-          <div class="why-number">0%</div>
-          <h4>Financing Available</h4>
-          <p>Flexible payment options to fit your budget.</p>
-        </div>
-        <div class="why-card fade-in">
-          <div class="why-number">A+</div>
-          <h4>Top-Rated Materials</h4>
-          <p>We only use premium, manufacturer-certified products.</p>
-        </div>
-        <div class="why-card fade-in">
-          <div class="why-number">10yr</div>
-          <h4>Workmanship Warranty</h4>
-          <p>Long-term protection for your investment.</p>
-        </div>
-        <div class="why-card fade-in">
-          <div class="why-number">500+</div>
-          <h4>Projects Completed</h4>
-          <p>Trusted by homeowners across the region.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ========== GALLERY ========== -->
   <section class="section section-light" id="gallery">
     <div class="container">
@@ -1650,59 +1542,34 @@
     const CLIENT_ID = 'mike';
     const SOURCE = 'website';
 
-    // ===== WEB-HAPTICS (https://github.com/lochie/web-haptics) =====
-    const WH_TOGGLE_MIN = 16, WH_TOGGLE_MAX = 184, WH_MAX_PHASE = 1000, WH_PWM_CYCLE = 20;
-    const whPatterns = {
-      success:   { pattern: [{ duration: 30, intensity: 0.5 }, { delay: 60, duration: 40, intensity: 1 }] },
-      warning:   { pattern: [{ duration: 40, intensity: 0.8 }, { delay: 100, duration: 40, intensity: 0.6 }] },
-      error:     { pattern: [{ duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.9 }, { delay: 40, duration: 50, intensity: 0.6 }] },
-      light:     { pattern: [{ duration: 15, intensity: 0.4 }] },
-      medium:    { pattern: [{ duration: 25, intensity: 0.7 }] },
-      heavy:     { pattern: [{ duration: 35, intensity: 1 }] },
-      soft:      { pattern: [{ duration: 40, intensity: 0.5 }] },
-      rigid:     { pattern: [{ duration: 10, intensity: 1 }] },
-      selection: { pattern: [{ duration: 8, intensity: 0.3 }] },
-      nudge:     { pattern: [{ duration: 80, intensity: 0.8 }, { delay: 80, duration: 50, intensity: 0.3 }] },
-      buzz:      { pattern: [{ duration: 1000, intensity: 1 }] },
-    };
-    function whModulate(duration, intensity) {
-      if (intensity >= 1) return [duration];
-      if (intensity <= 0) return [];
-      var onTime = Math.max(1, Math.round(WH_PWM_CYCLE * intensity));
-      var offTime = WH_PWM_CYCLE - onTime;
-      var result = [], remaining = duration;
-      while (remaining >= WH_PWM_CYCLE) { result.push(onTime, offTime); remaining -= WH_PWM_CYCLE; }
-      if (remaining > 0) { var remOn = Math.max(1, Math.round(remaining * intensity)); result.push(remOn); var remOff = remaining - remOn; if (remOff > 0) result.push(remOff); }
-      return result;
-    }
-    function whToVibratePattern(vibrations, defaultIntensity) {
-      var result = [];
-      for (var i = 0; i < vibrations.length; i++) {
-        var vib = vibrations[i];
-        var intensity = Math.max(0, Math.min(1, vib.intensity != null ? vib.intensity : defaultIntensity));
-        var delay = vib.delay || 0;
-        if (delay > 0) {
-          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += delay; }
-          else { if (result.length === 0) result.push(0); result.push(delay); }
-        }
-        var modulated = whModulate(vib.duration, intensity);
-        if (modulated.length === 0) {
-          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += vib.duration; }
-          else if (vib.duration > 0) { result.push(0, vib.duration); }
-          continue;
-        }
-        for (var j = 0; j < modulated.length; j++) result.push(modulated[j]);
-      }
-      return result;
-    }
+    // ===== HAPTICS (cross-platform) =====
+    let _hapticCtx = null;
     function haptic(type) {
       type = type || 'light';
       try {
-        if (!navigator.vibrate) return;
-        var preset = whPatterns[type];
-        if (!preset) { navigator.vibrate(15); return; }
-        var vibrations = preset.pattern.map(function(v) { return { duration: Math.min(v.duration, WH_MAX_PHASE), intensity: v.intensity, delay: v.delay }; });
-        navigator.vibrate(whToVibratePattern(vibrations, 0.5));
+        // Android: native vibration
+        if (navigator.vibrate) {
+          const patterns = {
+            light: [8], medium: [15], heavy: [25], soft: [20],
+            rigid: [10], selection: [8], nudge: [10, 40, 10],
+            success: [10, 60, 15], error: [30, 40, 30, 40, 30],
+            warning: [20, 50, 20], buzz: [100]
+          };
+          navigator.vibrate(patterns[type] || [15]);
+        }
+        // iOS + all platforms: AudioContext micro-pulse
+        if (!_hapticCtx) _hapticCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (_hapticCtx.state === 'suspended') _hapticCtx.resume();
+        var osc = _hapticCtx.createOscillator();
+        var gain = _hapticCtx.createGain();
+        osc.connect(gain);
+        gain.connect(_hapticCtx.destination);
+        osc.frequency.value = 200;
+        var dur = {light:0.008, medium:0.015, heavy:0.025, soft:0.012, rigid:0.006, selection:0.006, nudge:0.012, success:0.03, error:0.04, warning:0.02, buzz:0.06}[type] || 0.012;
+        gain.gain.setValueAtTime(0.15, _hapticCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
+        osc.start(_hapticCtx.currentTime);
+        osc.stop(_hapticCtx.currentTime + dur);
       } catch(e) {}
     }
 

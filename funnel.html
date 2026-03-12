@@ -128,6 +128,7 @@
       color: rgba(255,255,255,0.3);
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      display: none;
     }
 
     .quiz-close {
@@ -184,6 +185,14 @@
       line-height: 1.25;
     }
 
+    .quiz-step-desc {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      margin: -8px 0 16px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
     /* ========== QUIZ OPTIONS ========== */
     .quiz-options {
       display: flex;
@@ -214,6 +223,12 @@
 
     .quiz-option:active {
       transform: scale(0.98);
+    }
+
+    .quiz-option.selected {
+      border-color: var(--orange);
+      background: rgba(232, 146, 47, 0.15);
+      color: var(--white);
     }
 
     .quiz-option-icon {
@@ -481,63 +496,32 @@
     const CLIENT_ID = 'mike';
     const SOURCE = 'ad_funnel';
 
-    // ===== WEB-HAPTICS (https://github.com/lochie/web-haptics) =====
-    // Inlined for single-file usage — PWM-modulated haptic feedback
-    const WH_TOGGLE_MIN = 16, WH_TOGGLE_MAX = 184, WH_MAX_PHASE = 1000, WH_PWM_CYCLE = 20;
-    const whPatterns = {
-      success:   { pattern: [{ duration: 30, intensity: 0.5 }, { delay: 60, duration: 40, intensity: 1 }] },
-      warning:   { pattern: [{ duration: 40, intensity: 0.8 }, { delay: 100, duration: 40, intensity: 0.6 }] },
-      error:     { pattern: [{ duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.9 }, { delay: 40, duration: 50, intensity: 0.6 }] },
-      light:     { pattern: [{ duration: 15, intensity: 0.4 }] },
-      medium:    { pattern: [{ duration: 25, intensity: 0.7 }] },
-      heavy:     { pattern: [{ duration: 35, intensity: 1 }] },
-      soft:      { pattern: [{ duration: 40, intensity: 0.5 }] },
-      rigid:     { pattern: [{ duration: 10, intensity: 1 }] },
-      selection: { pattern: [{ duration: 8, intensity: 0.3 }] },
-      nudge:     { pattern: [{ duration: 80, intensity: 0.8 }, { delay: 80, duration: 50, intensity: 0.3 }] },
-      buzz:      { pattern: [{ duration: 1000, intensity: 1 }] },
-    };
-
-    function whModulate(duration, intensity) {
-      if (intensity >= 1) return [duration];
-      if (intensity <= 0) return [];
-      var onTime = Math.max(1, Math.round(WH_PWM_CYCLE * intensity));
-      var offTime = WH_PWM_CYCLE - onTime;
-      var result = [], remaining = duration;
-      while (remaining >= WH_PWM_CYCLE) { result.push(onTime, offTime); remaining -= WH_PWM_CYCLE; }
-      if (remaining > 0) { var remOn = Math.max(1, Math.round(remaining * intensity)); result.push(remOn); var remOff = remaining - remOn; if (remOff > 0) result.push(remOff); }
-      return result;
-    }
-
-    function whToVibratePattern(vibrations, defaultIntensity) {
-      var result = [];
-      for (var i = 0; i < vibrations.length; i++) {
-        var vib = vibrations[i];
-        var intensity = Math.max(0, Math.min(1, vib.intensity != null ? vib.intensity : defaultIntensity));
-        var delay = vib.delay || 0;
-        if (delay > 0) {
-          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += delay; }
-          else { if (result.length === 0) result.push(0); result.push(delay); }
-        }
-        var modulated = whModulate(vib.duration, intensity);
-        if (modulated.length === 0) {
-          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += vib.duration; }
-          else if (vib.duration > 0) { result.push(0, vib.duration); }
-          continue;
-        }
-        for (var j = 0; j < modulated.length; j++) result.push(modulated[j]);
-      }
-      return result;
-    }
-
+    // ===== HAPTICS (cross-platform) =====
+    let _hapticCtx = null;
     function haptic(type) {
       type = type || 'light';
       try {
-        if (!navigator.vibrate) return;
-        var preset = whPatterns[type];
-        if (!preset) { navigator.vibrate(15); return; }
-        var vibrations = preset.pattern.map(function(v) { return { duration: Math.min(v.duration, WH_MAX_PHASE), intensity: v.intensity, delay: v.delay }; });
-        navigator.vibrate(whToVibratePattern(vibrations, 0.5));
+        if (navigator.vibrate) {
+          const patterns = {
+            light: [8], medium: [15], heavy: [25], soft: [20],
+            rigid: [10], selection: [8], nudge: [10, 40, 10],
+            success: [10, 60, 15], error: [30, 40, 30, 40, 30],
+            warning: [20, 50, 20], buzz: [100]
+          };
+          navigator.vibrate(patterns[type] || [15]);
+        }
+        if (!_hapticCtx) _hapticCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (_hapticCtx.state === 'suspended') _hapticCtx.resume();
+        var osc = _hapticCtx.createOscillator();
+        var gain = _hapticCtx.createGain();
+        osc.connect(gain);
+        gain.connect(_hapticCtx.destination);
+        osc.frequency.value = 200;
+        var dur = {light:0.008, medium:0.015, heavy:0.025, soft:0.012, rigid:0.006, selection:0.006, nudge:0.012, success:0.03, error:0.04, warning:0.02, buzz:0.06}[type] || 0.012;
+        gain.gain.setValueAtTime(0.15, _hapticCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
+        osc.start(_hapticCtx.currentTime);
+        osc.stop(_hapticCtx.currentTime + dur);
       } catch(e) {}
     }
 
@@ -563,8 +547,9 @@
       // Step 0: Enticing first question — hooks people in
       {
         type: 'options',
-        eyebrow: 'Free Roofing Quote',
+        eyebrow: 'FREE QUOTE IN 2 MIN',
         question: "What's going on with your roof?",
+        description: "Tell us about your project and get a personalized quote — takes less than 2 minutes.",
         key: 'roof_issue',
         showTrustBar: true,
         options: [
@@ -782,6 +767,9 @@
     function renderOptions(step) {
       let html = '<div class="quiz-step-eyebrow">' + step.eyebrow + '</div>';
       html += '<h2>' + step.question + '</h2>';
+      if (step.description) {
+        html += '<p class="quiz-step-desc">' + step.description + '</p>';
+      }
       html += '<div class="quiz-options">';
       step.options.forEach(opt => {
         html += '<button class="quiz-option" onclick="selectOption(\'' + step.key + '\', \'' + opt.value + '\')">'
@@ -790,6 +778,7 @@
           + '</button>';
       });
       html += '</div>';
+      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-top: 20px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       if (step.showTrustBar) {
         html += '<div class="quiz-trust-bar">'
           + '<span>Licensed &amp; Insured</span>'
@@ -823,6 +812,7 @@
           + '</button>';
       });
       html += '</div>';
+      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-top: 20px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       return html;
     }
 
@@ -897,10 +887,23 @@
     // ===== QUIZ ACTIONS =====
     function selectOption(key, value) {
       haptic('selection');
+      // Deselect all options, then select clicked one
+      document.querySelectorAll('.quiz-option').forEach(function(o) { o.classList.remove('selected'); });
+      event.currentTarget.classList.add('selected');
       quizState.answers[key] = value;
+      // Show the Next button
+      var nextBtn = document.getElementById('quizNextBtn');
+      if (nextBtn) { nextBtn.style.display = ''; }
+      // Auto-advance after 1.5 seconds if user doesn't click something else
+      clearTimeout(window._autoAdvance);
+      window._autoAdvance = setTimeout(function() { advanceStep(); }, 1500);
+    }
+
+    function advanceStep() {
+      clearTimeout(window._autoAdvance);
+      haptic('light');
       quizState.currentStep++;
-      syncLead(); // partial save on every step
-      setTimeout(function() { haptic('light'); }, 150); // confirm tap on step advance
+      syncLead();
       renderStep(quizState.currentStep);
     }
 
