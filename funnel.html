@@ -101,15 +101,14 @@
     }
 
     .quiz-brand {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
       line-height: 1;
     }
 
-    .quiz-brand span { color: rgba(232, 146, 47, 0.5); }
+    .quiz-brand img {
+      height: 32px;
+      width: auto;
+      opacity: 0.5;
+    }
 
     .quiz-step-label {
       font-size: 0.75rem;
@@ -443,7 +442,7 @@
       Back
     </button>
     <div class="quiz-header-center">
-      <div class="quiz-brand">Elevate <span>Construction</span></div>
+      <div class="quiz-brand"><img src="logo.jpg" alt="Elevate Construction & Electrical"></div>
       <div class="quiz-step-label" id="quizStepLabel">Step 1 of 10</div>
     </div>
     <button class="quiz-close" onclick="closeFunnel()">&times;</button>
