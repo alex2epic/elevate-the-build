@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Get Your Free Roofing Quote | Elevate Construction & Electrical</title>
   <meta name="description" content="Answer a few quick questions and get a free roofing estimate in under 2 minutes. Licensed & insured, 5-star rated.">
+
+  <!-- Open Graph / Social Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Get Your Free Quote | Elevate Construction & Electrical">
+  <meta property="og:description" content="Answer a few quick questions and get a free estimate from New England's trusted construction & electrical pros. Takes under 2 minutes.">
+  <meta property="og:image" content="https://elevate-the-build.vercel.app/logo.jpg">
+  <meta property="og:url" content="https://elevate-the-build.vercel.app/funnel">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Get Your Free Quote | Elevate Construction & Electrical">
+  <meta name="twitter:description" content="Answer a few quick questions and get a free estimate. Licensed, insured, 5-star rated.">
+  <meta name="twitter:image" content="https://elevate-the-build.vercel.app/logo.jpg">
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -468,18 +481,63 @@
     const CLIENT_ID = 'mike';
     const SOURCE = 'ad_funnel';
 
-    // ===== HAPTICS =====
-    function haptic(type = 'light') {
-      try {
-        if (navigator.vibrate) {
-          switch(type) {
-            case 'light': navigator.vibrate(8); break;
-            case 'medium': navigator.vibrate(15); break;
-            case 'heavy': navigator.vibrate(25); break;
-            case 'success': navigator.vibrate([10, 40, 10]); break;
-            case 'error': navigator.vibrate([30, 40, 30]); break;
-          }
+    // ===== WEB-HAPTICS (https://github.com/lochie/web-haptics) =====
+    // Inlined for single-file usage — PWM-modulated haptic feedback
+    const WH_TOGGLE_MIN = 16, WH_TOGGLE_MAX = 184, WH_MAX_PHASE = 1000, WH_PWM_CYCLE = 20;
+    const whPatterns = {
+      success:   { pattern: [{ duration: 30, intensity: 0.5 }, { delay: 60, duration: 40, intensity: 1 }] },
+      warning:   { pattern: [{ duration: 40, intensity: 0.8 }, { delay: 100, duration: 40, intensity: 0.6 }] },
+      error:     { pattern: [{ duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.7 }, { delay: 40, duration: 40, intensity: 0.9 }, { delay: 40, duration: 50, intensity: 0.6 }] },
+      light:     { pattern: [{ duration: 15, intensity: 0.4 }] },
+      medium:    { pattern: [{ duration: 25, intensity: 0.7 }] },
+      heavy:     { pattern: [{ duration: 35, intensity: 1 }] },
+      soft:      { pattern: [{ duration: 40, intensity: 0.5 }] },
+      rigid:     { pattern: [{ duration: 10, intensity: 1 }] },
+      selection: { pattern: [{ duration: 8, intensity: 0.3 }] },
+      nudge:     { pattern: [{ duration: 80, intensity: 0.8 }, { delay: 80, duration: 50, intensity: 0.3 }] },
+      buzz:      { pattern: [{ duration: 1000, intensity: 1 }] },
+    };
+
+    function whModulate(duration, intensity) {
+      if (intensity >= 1) return [duration];
+      if (intensity <= 0) return [];
+      var onTime = Math.max(1, Math.round(WH_PWM_CYCLE * intensity));
+      var offTime = WH_PWM_CYCLE - onTime;
+      var result = [], remaining = duration;
+      while (remaining >= WH_PWM_CYCLE) { result.push(onTime, offTime); remaining -= WH_PWM_CYCLE; }
+      if (remaining > 0) { var remOn = Math.max(1, Math.round(remaining * intensity)); result.push(remOn); var remOff = remaining - remOn; if (remOff > 0) result.push(remOff); }
+      return result;
+    }
+
+    function whToVibratePattern(vibrations, defaultIntensity) {
+      var result = [];
+      for (var i = 0; i < vibrations.length; i++) {
+        var vib = vibrations[i];
+        var intensity = Math.max(0, Math.min(1, vib.intensity != null ? vib.intensity : defaultIntensity));
+        var delay = vib.delay || 0;
+        if (delay > 0) {
+          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += delay; }
+          else { if (result.length === 0) result.push(0); result.push(delay); }
         }
+        var modulated = whModulate(vib.duration, intensity);
+        if (modulated.length === 0) {
+          if (result.length > 0 && result.length % 2 === 0) { result[result.length - 1] += vib.duration; }
+          else if (vib.duration > 0) { result.push(0, vib.duration); }
+          continue;
+        }
+        for (var j = 0; j < modulated.length; j++) result.push(modulated[j]);
+      }
+      return result;
+    }
+
+    function haptic(type) {
+      type = type || 'light';
+      try {
+        if (!navigator.vibrate) return;
+        var preset = whPatterns[type];
+        if (!preset) { navigator.vibrate(15); return; }
+        var vibrations = preset.pattern.map(function(v) { return { duration: Math.min(v.duration, WH_MAX_PHASE), intensity: v.intensity, delay: v.delay }; });
+        navigator.vibrate(whToVibratePattern(vibrations, 0.5));
       } catch(e) {}
     }
 
@@ -838,10 +896,11 @@
 
     // ===== QUIZ ACTIONS =====
     function selectOption(key, value) {
-      haptic('medium');
+      haptic('selection');
       quizState.answers[key] = value;
       quizState.currentStep++;
       syncLead(); // partial save on every step
+      setTimeout(function() { haptic('light'); }, 150); // confirm tap on step advance
       renderStep(quizState.currentStep);
     }
 
@@ -858,7 +917,7 @@
         return;
       }
 
-      haptic('medium');
+      haptic('soft');
       input.classList.remove('error');
       error.style.display = 'none';
       quizState.answers[key] = val;
@@ -908,7 +967,7 @@
 
     function quizPrev() {
       if (quizState.currentStep > 0) {
-        haptic('light');
+        haptic('selection');
         quizState.currentStep--;
         if (QUIZ_STEPS[quizState.currentStep].type === 'loading') {
           quizState.currentStep--;
