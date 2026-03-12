@@ -1564,9 +1564,9 @@
         var gain = _hapticCtx.createGain();
         osc.connect(gain);
         gain.connect(_hapticCtx.destination);
-        osc.frequency.value = 200;
-        var dur = {light:0.008, medium:0.015, heavy:0.025, soft:0.012, rigid:0.006, selection:0.006, nudge:0.012, success:0.03, error:0.04, warning:0.02, buzz:0.06}[type] || 0.012;
-        gain.gain.setValueAtTime(0.15, _hapticCtx.currentTime);
+        osc.frequency.value = 150;
+        var dur = {light:0.015, medium:0.025, heavy:0.04, soft:0.02, rigid:0.01, selection:0.012, nudge:0.02, success:0.05, error:0.06, warning:0.035, buzz:0.1}[type] || 0.02;
+        gain.gain.setValueAtTime(0.5, _hapticCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
         osc.start(_hapticCtx.currentTime);
         osc.stop(_hapticCtx.currentTime + dur);

@@ -148,15 +148,15 @@
       flex: 1;
       overflow-y: auto;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 20px;
+      padding: 16px 20px;
     }
 
     .quiz-step {
       width: 100%;
       max-width: 560px;
-      animation: fadeUp 0.4s ease forwards;
+      animation: fadeUp 0.3s ease forwards;
     }
 
     @keyframes fadeUp {
@@ -165,31 +165,31 @@
     }
 
     .quiz-step-eyebrow {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--orange);
       text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .quiz-step h2 {
-      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-size: clamp(1.4rem, 4.5vw, 2.2rem);
       color: var(--white);
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 16px;
       text-transform: none;
       font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      line-height: 1.25;
+      line-height: 1.2;
     }
 
     .quiz-step-desc {
       color: rgba(255,255,255,0.5);
-      font-size: 0.9rem;
-      margin: -8px 0 16px;
-      line-height: 1.5;
+      font-size: 0.85rem;
+      margin: -4px 0 12px;
+      line-height: 1.4;
       text-align: center;
     }
 
@@ -197,7 +197,7 @@
     .quiz-options {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
 
     .quiz-option {
@@ -205,13 +205,13 @@
       border: 2px solid rgba(255,255,255,0.1);
       border-radius: var(--radius);
       color: var(--white);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      padding: 18px 24px;
+      padding: 14px 18px;
       text-align: left;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       transition: var(--transition);
       -webkit-tap-highlight-color: transparent;
     }
@@ -232,15 +232,15 @@
     }
 
     .quiz-option-icon {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       background: rgba(255,255,255,0.08);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .quiz-option:hover .quiz-option-icon {
@@ -251,20 +251,20 @@
     .quiz-options-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 8px;
     }
 
     .quiz-options-grid .quiz-option {
       flex-direction: column;
       text-align: center;
-      padding: 24px 16px;
-      gap: 10px;
+      padding: 16px 12px;
+      gap: 6px;
     }
 
     .quiz-options-grid .quiz-option-icon {
-      width: 48px;
-      height: 48px;
-      font-size: 1.4rem;
+      width: 36px;
+      height: 36px;
+      font-size: 1.2rem;
     }
 
     /* ========== QUIZ INPUTS ========== */
@@ -279,8 +279,8 @@
       border-radius: var(--radius);
       color: var(--white);
       font-family: 'DM Sans', sans-serif;
-      font-size: 1.1rem;
-      padding: 18px 20px;
+      font-size: 1rem;
+      padding: 14px 18px;
       transition: var(--transition);
       outline: none;
     }
@@ -293,13 +293,17 @@
       background: var(--orange);
       color: var(--white);
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.3rem;
-      padding: 18px;
+      font-size: 1.2rem;
+      padding: 14px;
       border-radius: var(--radius);
       letter-spacing: 0.06em;
       transition: var(--transition);
       box-shadow: 0 4px 20px var(--orange-glow);
-      margin-top: 8px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .quiz-submit:hover { background: var(--orange-hover); transform: translateY(-1px); }
@@ -516,9 +520,9 @@
         var gain = _hapticCtx.createGain();
         osc.connect(gain);
         gain.connect(_hapticCtx.destination);
-        osc.frequency.value = 200;
-        var dur = {light:0.008, medium:0.015, heavy:0.025, soft:0.012, rigid:0.006, selection:0.006, nudge:0.012, success:0.03, error:0.04, warning:0.02, buzz:0.06}[type] || 0.012;
-        gain.gain.setValueAtTime(0.15, _hapticCtx.currentTime);
+        osc.frequency.value = 150;
+        var dur = {light:0.015, medium:0.025, heavy:0.04, soft:0.02, rigid:0.01, selection:0.012, nudge:0.02, success:0.05, error:0.06, warning:0.035, buzz:0.1}[type] || 0.02;
+        gain.gain.setValueAtTime(0.5, _hapticCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, _hapticCtx.currentTime + dur);
         osc.start(_hapticCtx.currentTime);
         osc.stop(_hapticCtx.currentTime + dur);
@@ -770,6 +774,7 @@
       if (step.description) {
         html += '<p class="quiz-step-desc">' + step.description + '</p>';
       }
+      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-bottom: 12px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       html += '<div class="quiz-options">';
       step.options.forEach(opt => {
         html += '<button class="quiz-option" onclick="selectOption(\'' + step.key + '\', \'' + opt.value + '\')">'
@@ -778,7 +783,6 @@
           + '</button>';
       });
       html += '</div>';
-      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-top: 20px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       if (step.showTrustBar) {
         html += '<div class="quiz-trust-bar">'
           + '<span>Licensed &amp; Insured</span>'
@@ -804,6 +808,7 @@
       }
       html += '<div class="quiz-step-eyebrow">' + step.eyebrow + '</div>';
       html += '<h2>' + step.question + '</h2>';
+      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-bottom: 12px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       html += '<div class="quiz-options-grid">';
       step.options.forEach(opt => {
         html += '<button class="quiz-option" onclick="selectOption(\'' + step.key + '\', \'' + opt.value + '\')">'
@@ -812,7 +817,6 @@
           + '</button>';
       });
       html += '</div>';
-      html += '<button class="quiz-submit quiz-next-btn" id="quizNextBtn" onclick="advanceStep()" style="display:none; margin-top: 20px;">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       return html;
     }
 
@@ -894,9 +898,9 @@
       // Show the Next button
       var nextBtn = document.getElementById('quizNextBtn');
       if (nextBtn) { nextBtn.style.display = ''; }
-      // Auto-advance after 1.5 seconds if user doesn't click something else
+      // Auto-advance after 0.5s if user doesn't change answer
       clearTimeout(window._autoAdvance);
-      window._autoAdvance = setTimeout(function() { advanceStep(); }, 1500);
+      window._autoAdvance = setTimeout(function() { advanceStep(); }, 500);
     }
 
     function advanceStep() {
