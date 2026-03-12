@@ -780,13 +780,14 @@
       }
       html += '<div class="quiz-step-eyebrow">' + step.eyebrow + '</div>';
       html += '<h2>' + question + '</h2>';
+      var safePattern = step.pattern.replace(/\\/g, '\\\\');
       html += '<div class="quiz-input-group">'
         + '<input class="quiz-input" type="' + step.inputType + '" placeholder="' + step.placeholder + '"'
         + ' id="quizInput" autocomplete="' + (step.key === 'email' ? 'email' : step.key === 'name' ? 'name' : 'off') + '"'
-        + ' onkeydown="if(event.key===\'Enter\')submitInput(\'' + step.key + '\',\'' + step.pattern + '\',\'' + step.errorMsg + '\')">'
+        + ' onkeydown="if(event.key===\'Enter\')submitInput(\'' + step.key + '\',\'' + safePattern + '\',\'' + step.errorMsg + '\')">'
         + '<div class="quiz-error" id="quizError" style="display:none"></div>'
         + '</div>';
-      html += '<button class="quiz-submit" onclick="submitInput(\'' + step.key + '\',\'' + step.pattern + '\',\'' + step.errorMsg + '\')">' + step.buttonText + '</button>';
+      html += '<button class="quiz-submit" onclick="submitInput(\'' + step.key + '\',\'' + safePattern + '\',\'' + step.errorMsg + '\')">' + step.buttonText + '</button>';
       return html;
     }
 
